@@ -1,0 +1,47 @@
+{
+  "name": "@repyx/events",
+  "version": "1.0.1",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/repyxrp/events",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/repyxrp/events.git"
+  },
+  "keywords": [],
+  "author": "Heeyzim",
+  "license": "MIT",
+  "devDependencies": {
+    "@citizenfx/client": "2.0.10072-1",
+    "@citizenfx/server": "2.0.10072-1",
+    "@rocketseat/eslint-config": "^2.2.2",
+    "@types/node": "^22.7.4",
+    "eslint": "^8.57.1"
+  },
+  "dependencies": {
+    "eslint-compat-utils": "^0.5.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-module-utils": "^2.12.0",
+    "eslint-plugin-es-x": "^7.8.0",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^6.6.0",
+    "eslint-plugin-react": "^7.37.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-scope": "^7.2.2",
+    "eslint-visitor-keys": "^3.4.3",
+    "prettier": "^3.3.3",
+    "prettier-linter-helpers": "^1.0.0"
+  },
+  "description": ""
+}
