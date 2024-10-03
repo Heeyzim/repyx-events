@@ -1,21 +1,25 @@
 {
   "name": "@repyx/events",
-  "version": "1.0.1",
-  "main": "index.js",
+  "version": "1.0.0",
+  "main": ".js",
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"
   },
   "files": [
-    "dist"
+    "dist/**/*"
   ],
-  "homepage": "https://github.com/repyxrp/events",
+  "homepage": "https://github.com/heeyzim/repyx-events",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/repyxrp/events.git"
+    "url": "git+https://github.com/heeyzim/repyx-events.git"
   },
-  "keywords": [],
-  "author": "Heeyzim",
+  "keywords": [
+    "fivem",
+    "repyx",
+    "events"
+  ],
+  "author": "Luigi Zampieri <heeyzim>",
   "license": "MIT",
   "devDependencies": {
     "@citizenfx/client": "2.0.10072-1",

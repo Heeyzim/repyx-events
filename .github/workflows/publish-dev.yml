@@ -1,0 +1,38 @@
+name: Publish Development Version to NPM
+
+on:
+  push:
+    branches:
+      - dev
+    tags:
+      - '*-dev*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js and pnpm
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Publish to NPM with tag "dev"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --tag dev --access public
