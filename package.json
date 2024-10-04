@@ -1,6 +1,6 @@
 {
   "name": "@repyx/events",
-  "version": "1.0.2",
+  "version": "1.0.0-dev.1",
   "main": ".js",
   "scripts": {
     "build": "tsc --project tsconfig.json --declaration && tsc-alias",
