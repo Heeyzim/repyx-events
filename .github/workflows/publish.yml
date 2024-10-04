@@ -1,34 +1,38 @@
-name: Publish to NPM using pnpm
+name: Publish Stable Version to NPM
 
 on:
   push:
     branches:
       - main
+    tags:
+      - '*'
+
 jobs:
   publish:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js and pnpm
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '16'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Install pnpm
+      - name: Setup pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
 
-      - name: Install dependencies
+      - name: Install dependencies with pnpm
         run: pnpm install
 
-      - name: Build package
+      - name: Build project
         run: pnpm run build
 
-      - name: Publish to NPM
-        run: pnpm publish --no-git-checks
+      - name: Publish to NPM as "latest"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --access public

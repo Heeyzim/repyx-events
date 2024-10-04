@@ -4,15 +4,18 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     // Location
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@client/*": ["./client/*"],
-      "@client": ["./client/index.ts"],
-      "@server": ["./server/index.ts"],
-      "@server/*": ["./server/*"],
-      "@shared/*": ["./shared/*"]
+      "@client/*": ["src/client/*"],
+      "@client": ["src/client/index.ts"],
+      "@server": ["src/server/index.ts"],
+      "@server/*": ["src/server/*"],
+      "@shared/*": ["src/shared/*"]
     },
     "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
+    "preserveSymlinks": true,
     // Other
     "types": ["@citizenfx/server", "@citizenfx/client", "@types/node"],
     "lib": ["ES2020"],
