@@ -7,7 +7,7 @@ export interface IEventsServer {
   shared: ISharedEvent
 }
 
-export class Events {
+export class ServerEvents {
   server: LocalEvent = new LocalEvent()
   shared: SharedEvent = new SharedEvent()
 }

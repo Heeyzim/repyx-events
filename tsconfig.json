@@ -1,24 +1,28 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     // Location
     "baseUrl": "./src",
     "paths": {
+      "@client": ["./client/index.ts"],
       "@client/*": ["./client/*"],
+      "@server": ["./server/index.ts"],
       "@server/*": ["./server/*"],
-      "@shared/*": ["./shared/*"]
+      "@shared/*": ["./shared/*"],
+      "@shared": ["./shared/index.ts"]
     },
-    "outDir": "./dist",
-    // Other
+    "outDir": "./lib",
+    "rootDir": "./src",
     "types": ["@citizenfx/server", "@citizenfx/client", "@types/node"],
     "lib": ["ES2020"],
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src"],
   "exclude": ["**/node_modules", "**/.test.ts"]
 }

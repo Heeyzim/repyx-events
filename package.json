@@ -1,13 +1,14 @@
 {
   "name": "@repyx/events",
-  "version": "1.0.1",
-  "main": "index.js",
+  "version": "1.0.2",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"
+    "build": "tsc --project tsconfig.json  && tsc-alias",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0 --ignore-path .eslintignore"
   },
   "files": [
-    "dist"
+    "lib/**/*"
   ],
   "homepage": "https://github.com/repyxrp/events",
   "repository": {
@@ -22,7 +23,8 @@
     "@citizenfx/server": "2.0.10072-1",
     "@rocketseat/eslint-config": "^2.2.2",
     "@types/node": "^22.7.4",
-    "eslint": "^8.57.1"
+    "eslint": "^8.57.1",
+    "tsc-alias": "^1.8.10"
   },
   "dependencies": {
     "eslint-compat-utils": "^0.5.1",
