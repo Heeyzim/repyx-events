@@ -34,6 +34,17 @@ export class LocalEvent extends EventBase {
       })
     })
 
+    on(SharedEventType.EVENT_HANDLER_NOTIFY, async (props: EmitData) => {
+      const listeners = this.$listeners.get(props.name) || []
+      listeners.forEach(async (listener) => {
+        let value = listener.handler(...props.args)
+
+        if (isPromise(value)) {
+          value = await value
+        }
+      })
+    })
+
     on(SharedEventType.EVENT_HANDLER_CALLBACK, (props: CallbackValueData) => {
       this.$callbackValues.set(props.uniqueId, props.value)
     })
@@ -70,6 +81,17 @@ export class LocalEvent extends EventBase {
 
       checkCallback()
     })
+  }
+
+  notify = (name: string, ...args: any[]) => {
+    name = this.$validateEventName(name)
+
+    const emitData: NotifyEmitData = {
+      args,
+      name,
+    }
+
+    emit(SharedEventType.EVENT_HANDLER, emitData)
   }
 
   listen = (name: string, handler: (...args: any) => any) => {
