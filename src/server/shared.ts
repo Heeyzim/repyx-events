@@ -1,124 +1,94 @@
-'use strict'
-import { CallbackValueData, EmitData, EventBase } from '@shared/base'
-import { SharedEventType } from '@shared/type'
+import { CallbackValueData, EventBase } from '@shared/event-base'
+import { EmitData } from '@shared/local-event'
+import { SharedEventType } from '@shared/shared-event-type'
+import { generateUniqueId } from '@shared/utils'
+import { isPromise } from 'util/types'
 
-export interface ISharedEvent extends EventBase {
-  emit: (
-    name: string | string[],
-    target: number | 'global',
-    ...args: any[]
-  ) => Promise<any>
-  listen: (
-    name: string | string[],
-    handler: (source: number, ...args: any) => any,
-  ) => any
-}
-
-export class SharedEvent extends EventBase implements ISharedEvent {
-  #isPromise = (fn: any): boolean => {
-    if (fn instanceof Promise) return true
-    return false
-  }
-
-  constructor() {
+export class SharedEvent extends EventBase {
+  constructor(private timeout: number) {
     super()
 
     onNet(SharedEventType.SERVER_EVENT_HANDLER, async (props: EmitData) => {
-      const listeners = this.$listeners.filter(
-        (listener) => listener.name === props.name,
-      )
+      const listeners = this.$listeners.get(props.name) || []
+
       const source = globalThis.source
 
       for (const listener of listeners) {
-        let value = listener.handler(source, ...props.args)
+        let value = listener.handler(...props.args)
 
-        if (this.#isPromise(value)) {
+        if (isPromise(value)) {
           value = await value
         }
 
-        emitNet(SharedEventType.CLIENT_CALLBACK_RECEIVER, source, {
+        const emitData: CallbackValueData = {
           uniqueId: props.uniqueId,
-          values: value ?? null,
-        })
+          value,
+        }
+        emitNet(SharedEventType.CLIENT_CALLBACK_RECEIVER, source, emitData)
       }
     })
 
     onNet(
       SharedEventType.SERVER_CALLBACK_RECEIVER,
       (data: CallbackValueData) => {
-        this.$callbackValues.push(data)
+        this.$callbackValues.set(data.uniqueId, data.value)
       },
     )
   }
 
-  /**
-   * @description
-   * Emit an event from Server to Client
-   */
-  emit = async (
-    name: string | string[],
-    target: number | 'global',
-    ...args: any[]
-  ) => {
+  emit = async (name: string, target: number | 'global', ...args: any[]) => {
     name = this.$validateEventName(name)
-    const uniqueId = Math.random().toString(36).substring(2)
+    const uniqueId = generateUniqueId()
 
-    if (target === 'global') {
-      target = -1
+    if (target === 'global') target = -1
+
+    const emitData: EmitData = {
+      args,
+      name,
+      uniqueId,
     }
 
-    for (const alias of name) {
-      const emitData: EmitData = {
-        name: alias,
-        uniqueId,
-        args,
+    emitNet(SharedEventType.CLIENT_EVENT_HANDLER, target, emitData)
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(
+        () => reject(new Error(`Callback Timeout ${this.timeout}ms`)),
+        this.timeout,
+      )
+
+      const checkCallback = () => {
+        if (this.$callbackValues.has(uniqueId)) {
+          clearTimeout(timeout)
+          const returnValue = this.$callbackValues.get(uniqueId)
+          this.$callbackValues.delete(uniqueId)
+          resolve(returnValue)
+        } else {
+          setTimeout(checkCallback, 50)
+        }
       }
 
-      emitNet(SharedEventType.CLIENT_EVENT_HANDLER, target, emitData)
-    }
-
-    let callbackValues = this.$callbackValues.findIndex(
-      (data) => data.uniqueId === uniqueId,
-    )
-
-    while (callbackValues === -1) {
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      callbackValues = this.$callbackValues.findIndex(
-        (data) => data.uniqueId === uniqueId,
-      )
-    }
-
-    const returnValue = this.$callbackValues[callbackValues].values
-
-    // Remove the callback values from the array
-    this.$callbackValues.splice(callbackValues, 1)
-
-    return returnValue
+      checkCallback()
+    })
   }
 
-  /**
-   * @description
-   * Listen from a Client event
-   */
   listen = (
     name: string | string[],
     handler: (source: number, ...args: any) => any,
   ) => {
     name = this.$validateEventName(name)
-    const ids: number[] = []
 
-    for (const alias of name) {
-      this.$listeners.push({
-        id: this.$listenerCounter,
-        name: alias,
-        handler,
-      })
-
-      ids.push(this.$listenerCounter)
-
-      this.$listenerCounter++
+    const listener = {
+      id: this.$listenerCounter,
+      name,
+      handler,
     }
+    if (this.$listeners.has(name)) {
+      this.$listeners.get(name)?.push(listener)
+    } else {
+      this.$listeners.set(name, [listener])
+    }
+    this.$listenerCounter++
 
-    return ids
+    return listener.id
   }
 }

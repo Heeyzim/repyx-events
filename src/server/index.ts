@@ -1,13 +1,14 @@
-'use strict'
-import { ISharedEvent, SharedEvent } from '@server/shared'
-import { ILocalEvent, LocalEvent } from '@shared/local'
-
-export interface IEventsServer {
-  server: ILocalEvent
-  shared: ISharedEvent
-}
+import { SharedEvent } from '@server/shared'
+import { LocalEvent } from '@shared/local-event'
 
 export class ServerEvents {
-  server: LocalEvent = new LocalEvent()
-  shared: SharedEvent = new SharedEvent()
+  protected timeout: number
+  server: LocalEvent
+  shared: SharedEvent
+
+  constructor(timeout: number = 5000) {
+    this.timeout = timeout
+    this.server = new LocalEvent(this.timeout)
+    this.shared = new SharedEvent(this.timeout)
+  }
 }

@@ -1,37 +1,38 @@
-import { CallbackValueData, EventBase } from '@shared/event-base'
-import { EmitData } from '@shared/local-event'
 import { SharedEventType } from '@shared/shared-event-type'
 import { generateUniqueId } from '@shared/utils'
-import { isPromise } from 'util/types'
 
-export class SharedEvent extends EventBase {
+import { isPromise } from 'util/types'
+import { CallbackValueData, EventBase } from './event-base'
+
+export type EmitData = {
+  name: string
+  uniqueId: string
+  args: any[]
+}
+
+export class LocalEvent extends EventBase {
   constructor(private timeout: number) {
     super()
 
-    onNet(SharedEventType.CLIENT_EVENT_HANDLER, async (props: EmitData) => {
+    on(SharedEventType.EVENT_HANDLER, async (props: EmitData) => {
       const listeners = this.$listeners.get(props.name) || []
-
-      for (const listener of listeners) {
+      listeners.forEach(async (listener) => {
         let value = listener.handler(...props.args)
 
         if (isPromise(value)) {
           value = await value
-
-          const callbackData: CallbackValueData = {
-            uniqueId: props.uniqueId,
-            value,
-          }
-          emitNet(SharedEventType.SERVER_CALLBACK_RECEIVER, callbackData)
         }
-      }
+
+        emit(SharedEventType.EVENT_HANDLER_CALLBACK, {
+          uniqueId: props.uniqueId,
+          value,
+        })
+      })
     })
 
-    onNet(
-      SharedEventType.CLIENT_CALLBACK_RECEIVER,
-      (data: CallbackValueData) => {
-        this.$callbackValues.set(data.uniqueId, data.value)
-      },
-    )
+    on(SharedEventType.EVENT_HANDLER_CALLBACK, (props: CallbackValueData) => {
+      this.$callbackValues.set(props.uniqueId, props.value)
+    })
   }
 
   emit = (name: string, ...args: any[]) => {
@@ -44,7 +45,7 @@ export class SharedEvent extends EventBase {
       uniqueId,
     }
 
-    emitNet(SharedEventType.SERVER_EVENT_HANDLER, emitData)
+    emit(SharedEventType.EVENT_HANDLER, emitData)
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(

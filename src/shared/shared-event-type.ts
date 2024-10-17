@@ -9,4 +9,5 @@ export const SharedEventType = {
 
   // Local Event
   EVENT_HANDLER: `repyx:events:local:eventHandler`,
+  EVENT_HANDLER_CALLBACK: `repyx:events:local:eventHandler:callback`,
 } as const
