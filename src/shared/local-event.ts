@@ -1,8 +1,7 @@
 import { SharedEventType } from '@shared/shared-event-type'
-import { generateUniqueId } from '@shared/utils'
+import { generateUniqueId, isPromise } from '@shared/utils'
 
-import { isPromise } from 'util/types'
-import { CallbackValueData, EventBase } from './event-base'
+import { CallbackValueData, EventBase } from '@shared/event-base'
 
 export type EmitData = {
   name: string

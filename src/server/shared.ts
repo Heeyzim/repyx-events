@@ -1,8 +1,7 @@
 import { CallbackValueData, EventBase } from '@shared/event-base'
 import { EmitData } from '@shared/local-event'
 import { SharedEventType } from '@shared/shared-event-type'
-import { generateUniqueId } from '@shared/utils'
-import { isPromise } from 'util/types'
+import { generateUniqueId, isPromise } from '@shared/utils'
 
 export class SharedEvent extends EventBase {
   constructor(private timeout: number) {
