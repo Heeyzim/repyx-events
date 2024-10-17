@@ -9,6 +9,11 @@ export type EmitData = {
   args: any[]
 }
 
+export type NotifyEmitData = {
+  name: string
+  args: any[]
+}
+
 export class LocalEvent extends EventBase {
   constructor(private timeout: number) {
     super()

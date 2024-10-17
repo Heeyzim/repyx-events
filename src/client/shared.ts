@@ -1,5 +1,5 @@
 import { CallbackValueData, EventBase } from '@shared/event-base'
-import { EmitData } from '@shared/local-event'
+import { EmitData, NotifyEmitData } from '@shared/local-event'
 import { SharedEventType } from '@shared/shared-event-type'
 import { generateUniqueId, isPromise } from '@shared/utils'
 
@@ -24,6 +24,21 @@ export class SharedEvent extends EventBase {
         }
       }
     })
+
+    onNet(
+      SharedEventType.CLIENT_EVENT_HANDLER_NOTIFY,
+      async (props: NotifyEmitData) => {
+        const listeners = this.$listeners.get(props.name) || []
+
+        for (const listener of listeners) {
+          let value = listener.handler(...props.args)
+
+          if (isPromise(value)) {
+            value = await value
+          }
+        }
+      },
+    )
 
     onNet(
       SharedEventType.CLIENT_CALLBACK_RECEIVER,
@@ -64,6 +79,17 @@ export class SharedEvent extends EventBase {
 
       checkCallback()
     })
+  }
+
+  notify = (name: string, ...args: any[]): void => {
+    name = this.$validateEventName(name)
+
+    const emitData: NotifyEmitData = {
+      args,
+      name,
+    }
+
+    emitNet(SharedEventType.SERVER_EVENT_HANDLER_NOTIFY, emitData)
   }
 
   listen = (name: string, handler: (...args: any) => any) => {
