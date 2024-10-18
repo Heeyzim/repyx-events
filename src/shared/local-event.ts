@@ -50,7 +50,7 @@ export class LocalEvent extends EventBase {
     })
   }
 
-  emit = (name: string, ...args: any[]) => {
+  emit = async <T = any>(name: string, ...args: any[]): Promise<T> => {
     name = this.$validateEventName(name)
     const uniqueId = generateUniqueId()
 
@@ -62,7 +62,7 @@ export class LocalEvent extends EventBase {
 
     emit(SharedEventType.EVENT_HANDLER, emitData)
 
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       const timeout = setTimeout(
         () => reject(new Error(`Callback Timeout ${this.timeout}ms`)),
         this.timeout,

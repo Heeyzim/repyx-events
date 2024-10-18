@@ -50,7 +50,11 @@ export class SharedEvent extends EventBase {
     )
   }
 
-  emit = async (name: string, target: number | 'global', ...args: any[]) => {
+  emit = async <T = any>(
+    name: string,
+    target: number | 'global',
+    ...args: any[]
+  ): Promise<T> => {
     name = this.$validateEventName(name)
     const uniqueId = generateUniqueId()
 
@@ -64,7 +68,7 @@ export class SharedEvent extends EventBase {
 
     emitNet(SharedEventType.CLIENT_EVENT_HANDLER, target, emitData)
 
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       const timeout = setTimeout(
         () => reject(new Error(`Callback Timeout ${this.timeout}ms`)),
         this.timeout,
